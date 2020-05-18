@@ -6,7 +6,7 @@ import scipy.linalg as scla
 from scipy.stats import ortho_group
 import tabulate
 import re
-from context import sample as rank_greville
+from context import rank_greville
 
 def reset_randn(n, m):
 	np.random.seed(0)

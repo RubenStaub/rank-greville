@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import scipy.linalg as scla
 from fractions import Fraction
-from context import sample as rank_greville
+from context import rank_greville
 
 ### Tools
 

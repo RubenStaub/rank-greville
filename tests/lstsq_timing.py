@@ -4,7 +4,7 @@ import timeit
 from inspect import cleandoc as trim
 import numpy as np
 import scipy.linalg as scla
-from context import sample as rank_greville
+from context import rank_greville
 from unit_testing import generate_normal_dist_matrix
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
