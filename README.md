@@ -1,4 +1,4 @@
-# rank-greville
+# Rank-Greville <img src="logo.svg" alt="rank-greville logo" height="32">
 Recursive least squares solver in Python3, based on rank-decomposition and inspired by Greville's algorithm
 
 ## Context
@@ -6,7 +6,7 @@ Recursive least squares solver in Python3, based on rank-decomposition and inspi
 Let us consider the **minimum-norm least-squares solution X** to a system of linear equations **AX = Y**. This solution is unique and defined whether the system of linear equation is overdetermined, underdetermined or both (i.e. for any matrix A). Still, we'll assume here that the entries of A are **real numbers**.
 
 #### Moore-Penrose pseudoinverse
-Penrose showed that this solution X can be computed using the **pseudoinverse A<sup>+</sup>** (also called generalized inverse) of A: X = A<sup>+</sup>Y. Therefore, computing the pseudoinverse A<sup>+</sup> is particularly relevant for updating the least-squares solution X' on altered regressand Y'.
+Penrose showed that this solution X can be computed using the **pseudoinverse A<sup>+</sup>** (also called generalized inverse) of A: X = A<sup>+</sup>Y. Therefore, computing the pseudoinverse A<sup>+</sup> is particularly relevant for recomputing the least-squares solution X' with a different regressand Y'.
 
 #### Recursive least-squares
 What if a new equation aX = y is added? One could recompute from scratch the least-squares solution X' and/or the pseudoinverse A'<sup>+</sup> of the row-augmented matrix A'. However, this would be particularly time-consuming.
