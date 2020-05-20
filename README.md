@@ -99,11 +99,28 @@ Operation | Least-squares solution | Pseudoinverse | Covariance matrix
 **Note:** This O(mn) complexity comes from simply maintaining a copy of A, and could straightforwardly be reduced to O(nr). If you are interested by such feature, feel free to request it by opening an issue, and @RubenStaub will focus on implementing it.
 
 ## Three variants
+This Python3 module implements all three variants of the rank-Greville algorithm discussed in the related paper. These variants differ mainly in the internal observations basis used (i.e. the type of rank decomposition used).
+
 ### Original rank-Greville
+In this version, the observations basis is an arbitrary maximal set of linearly independent observations among the rows of A.
+
+The original rank-Greville algorithm is implemented via the `RecursiveModel` class.
+
+All features are available for this version.
 
 ### Orthogonal rank-Greville
+In this version, the observations basis is an orthogonal basis composed of the non-null rejection vectors observed (i.e. component of each observation that is linearly indepedent from previously seen observations).
+
+The orthogonal rank-Greville algorithm is implemented via the `RecursiveModelOrthogonal` class.
+
+All features but the covariance matrix update are available for this version.
 
 ### Orthonormal rank-Greville
+In this version, the observations basis is an orthonormal basis composed of the non-null rejection vectors observed rescaled to unit-length.
+
+The orthonormal rank-Greville algorithm is implemented via the `RecursiveModelOrthonormal` class.
+
+All features but the covariance matrix update are available for this version. Note that this variant requires algebraic operations not supported on rationals, and is therefore not compatible with Python3's `Fractions` module (see Fractions support below).
 
 ## How to install
 
