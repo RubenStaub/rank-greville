@@ -576,7 +576,7 @@ class RecursiveModel(object):
 		
 		if self.observations_storage:
 			# Update raw observations: A_new = (A/tr(Γ))
-			# Cost: time: O(mr) ; space: O(mr)
+			# Cost: time: O(mn) ; space: O(mn)
 			tmp_array = np.empty((self.nb_obs + 1, self.nb_regressors), dtype=decomp_obs.dtype)
 			tmp_array[:-1] = self.observations
 			tmp_array[-1] = new_observation
