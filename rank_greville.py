@@ -664,7 +664,7 @@ class RecursiveModel(object):
 		
 		return(self.pseudo_inverse)
 	
-	def add_new_regressors(self, nb_new_var=None, new_param_guess=0, new_variances_guess=None):
+	def add_new_regressors(self, nb_new_var=None, new_param_guess=0, new_variances_guess=np.nan):
 		"""Add unprecedently seen regressors to the model.
 		
 		Parameters:
@@ -679,10 +679,11 @@ class RecursiveModel(object):
 				Note: if None, the new guessed parameters are taken as zero.
 				Default: 0
 			
-			new_variances_guess (optional, 2D float array): Guessed parameters covariance for the new regressors.
-				Expecting: dim(new_variances_guess) == nb_new_var. The variables will be added in the order provided.
-				Note: if None, the new guessed variances are taken as the average of current guessed variances.
-				Default: None
+			new_variances_guess (optional, scalar or 2D float array or 'average'): Guessed parameters covariance for the new regressors.
+				Expecting: dim(new_variances_guess) == (nb_new_var, nb_new_var). The variables will be added in the order provided.
+				Note: if scalar, the new guessed variances are taken as I*new_variances_guess (where I is the identity matrix).
+				Note: if 'average', the new guessed variances are taken as the average of current guessed variances.
+				Default: NaN scalar
 		
 		Returns:
 			None
@@ -730,9 +731,12 @@ class RecursiveModel(object):
 			if self.empirical_variance:
 				if new_variances_guess is not None:
 					warnings.warn('Purely empirical variance is enabled, but guessed variance is also provided. Guessed variance will be discarded.')
-				new_variances_guess = np.eye(nb_new_var)
-			elif new_variances_guess is None:
-				new_variances_guess = np.zeros((nb_new_var, nb_new_var))
+					dtype_guess = np.array(new_variances_guess).dtype
+				else:
+					dtype_guess = None
+				new_variances_guess = np.eye(nb_new_var, dtype=dtype_guess)
+			elif new_variances_guess is 'average':
+				new_variances_guess = np.zeros((nb_new_var, nb_new_var), dtype=self.variance_parameters_guess.dtype)
 				np.fill_diagonal(new_variances_guess, self.variance_parameters_guess.diagonal().mean())
 			elif np.isscalar(new_variances_guess):
 				new_variances_guess = new_variances_guess*np.eye(nb_new_var, dtype=np.array(new_variances_guess).dtype)
