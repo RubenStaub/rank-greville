@@ -65,7 +65,7 @@ Updating the model by adding an equation (i.e. calling `model.add_observation`) 
 ### Covariance matrix update
 Finally, in addition to the least-squares solution X, this rank-Greville implementation can also maintain the covariance matrix Var(X):
 
-> Var(X) = Var(A<sup>+</sup>Y) = A<sup>+</sup><sup>T</sup>Var(ε)A<sup>+</sup>
+> Var(X) = Var(A<sup>+</sup>ε) = A<sup>+</sup><sup>T</sup>Var(ε)A<sup>+</sup>
 
 by supplying the additional argument `covariance_update=True` during the instantiation of `RecursiveModel`.
 
@@ -125,13 +125,36 @@ All features but the covariance matrix update are available for this version. No
 ## How to install
 
 ## Covariance support
+This implementation includes support for computing the covariance matrix Var(X) of the minimum-norm least-squares solution X (i.e. the linear model parameters). The covariance matrix Var(X) is estimated by considering the hypotheses of an ordinary least squares: in particular the homoscedasticity and non-autocorrelation of the errors ε along with the exogeneity of the regressors. Therefore:
+
+> Var(X) = Var(A<sup>+</sup>ε) = A<sup>+</sup><sup>T</sup>A<sup>+</sup>\*s<sup>2</sup>
+
+> where s<sup>2</sup> is the unbiased estimator of the variance of the noise: s<sup>2</sup> = ε<sup>T</sup>ε/(n-r)
+
+This is only well defined if A is a thin full rank matrix (i.e. overdetermined system), since, in this case, Im(A<sup>+</sup>) = ℝ<sup>m</sup>, meaning that A<sup>+</sup>ε can span over the whole ambient space of the model parameters.
+
+However, if A is rank-deficient, then the kernel of A<sup>+</sup><sup>T</sup> is non-null and no empirical covariance information can be found for this subspace (since this subspace is simply unobserved). Nonetheless, it is still possible to consider a guess g for the least-squares solution X (e.g. g = 0 leads to the minimum-norm least-squares solution), and its associated covariance matrix Var(g).
+
+But first, let us play with this concept by writing the system of linear equations A(X-g) = Y-Ag ⇔ AX' = Y'. Solving this system for X' leads to X-g being the minimum-norm solution such that the error A(X-g) - (Y-Ag) = AX-Y has minimum norm (i.e. X is a least-squares solution of AX = Y). As a consequence, by using a guess g, one can have find the least-squares solution X closest (with respect to the euclidean norm) to g. Using the pseudoinverse A<sup>+</sup>, we find:
+
+> X-g = A<sup>+</sup>Y - A<sup>+</sup>Ag ⇔ X = A<sup>+</sup>Y + (1-A<sup>+</sup>A)g = A<sup>+</sup>Y + P<sub>Ker</sub> g
+
+> where P<sub>Ker</sub> is the projector onto Ker(A), the kernel of A (i.e. the unobserved regressors subspace).
+
+Note that considering a guess g provides with a generalization of the minimum-norm least-square method. In particular, taking g = 0 leads to the usual minimum-norm least-squares solution. This generalization also applies to the covariance matrix, assuming (quite reasonably) that g is uncorrelated with the error ε:
+
+> Var(X) = Var(A<sup>+</sup>ε + P<sub>Ker</sub> g) = Var(A<sup>+</sup>ε) + Var(P<sub>Ker</sub> g)
+
+This formula is used in this implementation for computing/updating the covariance matrix Var(X), and it requires a guess g and its associated covariance matrix Var(g) that can be provided by the `model.add_new_regressors` method.
+
+By default, when new regressors are encountered (for the first observation, or if m increases) their associated guess is set to zero, and assumed non-autocorrelated with undefined variance (i.e. 𝔼(g) = 0, Var(g) = diag(NaN)). If covariance matrix computations are requested, a different guess should be provided by calling `model.add_new_regressors` beforehand with keyword argument `new_variances_guess=Var(g)`. Note that this method can also be used to provide with a non-null guess `new_param_guess=g` (𝔼(g) technically). More information can be found in the documentation of this function: `help(RecursiveModel.add_new_regressors)`.
 
 ## Fractions support and floating point precision
 
 ## Some examples
 ### Fractions support
 
-### Covariance matrix
+### Covariance matrix and confidence intervals
 
 ## Designed with Numpy
 This module heavily relies on the Numpy library for a fast and multi-threading ready implementation.
