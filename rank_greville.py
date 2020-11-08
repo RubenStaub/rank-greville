@@ -742,7 +742,7 @@ class RecursiveModel(object):
 				new_variances_guess = new_variances_guess*np.eye(nb_new_var, dtype=np.array(new_variances_guess).dtype)
 			if self.covariance_update: # Covariance update formula assumes symmetric guessed covariance matrix
 				try:
-					assert(np.allclose(new_variances_guess, new_variances_guess.T))
+					assert(np.allclose(new_variances_guess, new_variances_guess.T, equal_nan=True))
 				except TypeError:
 					assert(np.all(new_variances_guess == new_variances_guess.T))
 			
@@ -921,9 +921,6 @@ class RecursiveModelOrthogonal(RecursiveModel):
 	# r		= self.nb_core_obs = |observations basis| = rank of A
 	# m		= self.nb_regressors (number of regressors) 
 	
-	def __init__(self, eps=None, pseudo_inverse_update=False, pseudo_inverse_support=False, covariance_support=False, full_storage=False, empirical_variance=False):
-		super(self.__class__, self).__init__(eps=eps, pseudo_inverse_update=pseudo_inverse_update, covariance_update=False, pseudo_inverse_support=pseudo_inverse_support, covariance_support=covariance_support, full_storage=full_storage, empirical_variance=empirical_variance)
-	
 	#################################
 	#    Formulae implementation    #
 	#################################
@@ -982,7 +979,7 @@ class RecursiveModelOrthogonal(RecursiveModel):
 		tmp_array[-1] = inv_rescl_factor*kalman_gain
 		self.dual_observations_basis = tmp_array
 		
-		# Update inv(P) matrix: inv(P_new) = (inv(P) / -tr(αζ) | -αζ / α²(1+tr(γ).ζ)
+		# Update inv(P) matrix: inv(P_new) = (inv(P) / -tr(αζ) | -αζ / α²(1+tr(γ).ζ))
 		# Cost: time: O(r²) ; space: O(r²)
 		tmp_array = np.empty((self.nb_core_obs + 1, self.nb_core_obs + 1), dtype=kalman_gain.dtype)
 		tmp_array[:-1, :-1] = self.sum_proj_inv
@@ -1046,9 +1043,6 @@ class RecursiveModelOrthonormal(RecursiveModel):
 	# r		= self.nb_core_obs = |observations basis| = rank of A
 	# m		= self.nb_regressors (number of regressors) 
 	
-	def __init__(self, eps=None, pseudo_inverse_update=False, pseudo_inverse_support=False, covariance_support=False, full_storage=False, empirical_variance=False):
-		super(self.__class__, self).__init__(eps=eps, pseudo_inverse_update=pseudo_inverse_update, covariance_update=False, pseudo_inverse_support=pseudo_inverse_support, covariance_support=covariance_support, full_storage=full_storage, empirical_variance=empirical_variance)
-	
 	#################################
 	#    Formulae implementation    #
 	#################################
@@ -1104,7 +1098,7 @@ class RecursiveModelOrthonormal(RecursiveModel):
 		# Cost: time: O(1) ; space: O(1)
 		self.dual_observations_basis = self.observations_basis
 		
-		# Update inv(P) matrix: inv(P_new) = (inv(P) / -tr(αζ) | -αζ / α²(1+tr(γ).ζ)
+		# Update inv(P) matrix: inv(P_new) = (inv(P) / -tr(αζ) | -αζ / α²(1+tr(γ).ζ))
 		# Cost: time: O(r²) ; space: O(r²)
 		tmp_array = np.empty((self.nb_core_obs + 1, self.nb_core_obs + 1), dtype=kalman_gain.dtype)
 		tmp_array[:-1, :-1] = self.sum_proj_inv

@@ -106,21 +106,17 @@ In this version, the observations basis is an arbitrary maximal set of linearly 
 
 The original rank-Greville algorithm is implemented via the `RecursiveModel` class.
 
-All features are available for this version.
-
 ### Orthogonal rank-Greville
 In this version, the observations basis is an orthogonal basis composed of the non-null rejection vectors observed (i.e. component of each observation that is linearly indepedent from previously seen observations).
 
 The orthogonal rank-Greville algorithm is implemented via the `RecursiveModelOrthogonal` class.
-
-All features but the covariance matrix update are available for this version.
 
 ### Orthonormal rank-Greville
 In this version, the observations basis is an orthonormal basis composed of the non-null rejection vectors observed rescaled to unit-length.
 
 The orthonormal rank-Greville algorithm is implemented via the `RecursiveModelOrthonormal` class.
 
-All features but the covariance matrix update are available for this version. Note that this variant requires algebraic operations not supported on rationals, and is therefore not compatible with Python3's `Fractions` module (see Fractions support below).
+Note that this variant requires algebraic operations not supported on rationals, and is therefore not compatible with Python3's `Fractions` module (see Fractions support below).
 
 ## How to install
 
